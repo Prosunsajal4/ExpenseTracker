@@ -21,7 +21,7 @@ const App = () => {
   const [filter, setFilter] = useState({ type: 'all', startDate: '', endDate: '' });
   const [isLoading, setIsLoading] = useState(false);
 
-  const API_BASE_URL = 'http://localhost:5000/api';
+  const API_BASE_URL = '/api';
 
   useEffect(() => {
     fetchTransactions();

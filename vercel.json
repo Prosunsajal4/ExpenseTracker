@@ -1,16 +1,10 @@
 {
   "version": 2,
-  "installCommand": "npm install && cd client && npm install",
-  "buildCommand": "cd client && npm run build",
+  "buildCommand": "cd client && npm install && npm run build",
   "outputDirectory": "client/build",
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/api/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/"
-    }
-  ]
+  "installCommand": "npm install && cd client && npm install",
+  "framework": null,
+  "env": {
+    "MONGO_URI": "mongodb+srv://AccessUser:6uv33P9ydsh93VRi@prosun.7xdyt.mongodb.net/fitfat?retryWrites=true&w=majority"
+  }
 }
