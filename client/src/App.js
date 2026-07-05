@@ -35,8 +35,8 @@ const App = () => {
       if (filter.type && filter.type !== 'all') queryParams.append('type', filter.type);
       if (filter.startDate) queryParams.append('startDate', filter.startDate);
       if (filter.endDate) queryParams.append('endDate', filter.endDate);
-      
-      const url = `${API_BASE_URL}/transactions${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
+      const queryString = queryParams.toString();
+      const url = API_BASE_URL + '/transactions' + (queryString ? '?' + queryString : '');
       const response = await axios.get(url);
       setTransactions(response.data);
     } catch (error) {
@@ -48,7 +48,7 @@ const App = () => {
 
   const fetchStats = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/stats`);
+      const response = await axios.get(API_BASE_URL + '/stats');
       setStats(response.data);
     } catch (error) {
       console.error('Error fetching stats:', error);
@@ -59,7 +59,7 @@ const App = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      await axios.post(`${API_BASE_URL}/transactions", formData);
+      await axios.post(API_BASE_URL + '/transactions', formData);
       setShowForm(false);
       setFormData({
         type: 'expense',
@@ -83,7 +83,7 @@ const App = () => {
     if (window.confirm('Are you sure you want to delete this transaction?')) {
       setIsLoading(true);
       try {
-        await axios.delete(`${API_BASE_URL}/transactions/${id}`);
+        await axios.delete(API_BASE_URL + '/transactions/' + id);
         fetchTransactions();
         fetchStats();
       } catch (error) {
@@ -109,7 +109,6 @@ const App = () => {
       acc[date] = (acc[date] || 0) + t.amount;
       return acc;
     }, {});
-    
     return Object.entries(incomeData).map(([date, amount]) => ({ date, amount }));
   };
 
@@ -118,9 +117,7 @@ const App = () => {
       acc[t.category] = (acc[t.category] || 0) + t.amount;
       return acc;
     }, {});
-    
-    const data = Object.entries(expensesByCategory).map(([name, value]) => ({ name, value }));
-    return data;
+    return Object.entries(expensesByCategory).map(([name, value]) => ({ name, value }));
   };
 
   const colors = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D'];
@@ -153,49 +150,25 @@ const App = () => {
         </div>
 
         <div className="controls">
-          <button 
-            onClick={() => setShowForm(!showForm)}
-            className="add-btn"
-            disabled={isLoading}
-          >
+          <button onClick={() => setShowForm(!showForm)} className="add-btn" disabled={isLoading}>
             {showForm ? 'Cancel' : '+ Add Transaction'}
           </button>
-          
+
           <div className="filters">
-            <select 
-              value={filter.type} 
-              onChange={(e) => setFilter({...filter, type: e.target.value})}
-            >
+            <select value={filter.type} onChange={(e) => setFilter({...filter, type: e.target.value})}>
               <option value="all">All Types</option>
               <option value="income">Income Only</option>
               <option value="expense">Expense Only</option>
             </select>
-            <input
-              type="date"
-              value={filter.startDate}
-              onChange={(e) => setFilter({...filter, startDate: e.target.value})}
-              placeholder="Start Date"
-            />
-            <input
-              type="date"
-              value={filter.endDate}
-              onChange={(e) => setFilter({...filter, endDate: e.target.value})}
-              placeholder="End Date"
-            />
-            <button onClick={() => setFilter({ type: 'all', startDate: '', endDate: '' })}>
-              Clear Filters
-            </button>
+            <input type="date" value={filter.startDate} onChange={(e) => setFilter({...filter, startDate: e.target.value})} />
+            <input type="date" value={filter.endDate} onChange={(e) => setFilter({...filter, endDate: e.target.value})} />
+            <button onClick={() => setFilter({ type: 'all', startDate: '', endDate: '' })}>Clear Filters</button>
           </div>
         </div>
 
         <AnimatePresence>
           {showForm && (
-            <motion.div 
-              className="transaction-form"
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-            >
+            <motion.div className="transaction-form" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}>
               <h2>Add New Transaction</h2>
               <form onSubmit={handleSubmit}>
                 <div className="form-row">
@@ -208,53 +181,23 @@ const App = () => {
                   </div>
                   <div className="form-group">
                     <label>Category</label>
-                    <input
-                      type="text"
-                      name="category"
-                      value={formData.category}
-                      onChange={handleInputChange}
-                      placeholder="e.g., Food, Salary, Bills"
-                      required
-                    />
+                    <input type="text" name="category" value={formData.category} onChange={handleInputChange} placeholder="e.g., Food, Salary, Bills" required />
                   </div>
                 </div>
-
                 <div className="form-row">
                   <div className="form-group">
                     <label>Amount</label>
-                    <input
-                      type="number"
-                      name="amount"
-                      value={formData.amount}
-                      onChange={handleInputChange}
-                      placeholder="0.00"
-                      step="0.01"
-                      required
-                    />
+                    <input type="number" name="amount" value={formData.amount} onChange={handleInputChange} placeholder="0.00" step="0.01" required />
                   </div>
                   <div className="form-group">
                     <label>Date</label>
-                    <input
-                      type="date"
-                      name="date"
-                      value={formData.date}
-                      onChange={handleInputChange}
-                      required
-                    />
+                    <input type="date" name="date" value={formData.date} onChange={handleInputChange} required />
                   </div>
                 </div>
-
                 <div className="form-row">
                   <div className="form-group">
                     <label>Description</label>
-                    <input
-                      type="text"
-                      name="description"
-                      value={formData.description}
-                      onChange={handleInputChange}
-                      placeholder="Transaction description"
-                      required
-                    />
+                    <input type="text" name="description" value={formData.description} onChange={handleInputChange} placeholder="Transaction description" required />
                   </div>
                   <div className="form-group">
                     <label>Payment Method</label>
@@ -266,7 +209,6 @@ const App = () => {
                     </select>
                   </div>
                 </div>
-
                 <button type="submit" className="submit-btn" disabled={isLoading}>
                   {isLoading ? 'Adding...' : 'Add Transaction'}
                 </button>
@@ -290,22 +232,14 @@ const App = () => {
               <div className="no-data">No transaction data available for chart</div>
             )}
           </div>
-
           <div className="chart-container">
             <h3>Expenses by Category</h3>
             {getPieChartData().length > 0 ? (
               <PieChart width={400} height={300}>
-                <Pie
-                  data={getPieChartData()}
-                  cx={200}
-                  cy={150}
-                  outerRadius={100}
-                  fill="#8884d8"
-                  dataKey="value"
-                  label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
-                >
+                <Pie data={getPieChartData()} cx={200} cy={150} outerRadius={100} fill="#8884d8" dataKey="value"
+                  label={({ name, percent }) => name + ' ' + (percent * 100).toFixed(0) + '%'}>
                   {getPieChartData().map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
+                    <Cell key={'cell-' + index} fill={colors[index % colors.length]} />
                   ))}
                 </Pie>
                 <Tooltip />
@@ -339,28 +273,15 @@ const App = () => {
                 <tbody>
                   <AnimatePresence>
                     {transactions.map((transaction) => (
-                      <motion.tr 
-                        key={transaction._id}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                      >
+                      <motion.tr key={transaction._id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                         <td>{format(new Date(transaction.date), 'MMM dd, yyyy')}</td>
-                        <td>
-                          <span className={`type-badge ${transaction.type}`}>{transaction.type}</span>
-                        </td>
+                        <td><span className={'type-badge ' + transaction.type}>{transaction.type}</span></td>
                         <td>{transaction.category}</td>
                         <td>{transaction.description}</td>
-                        <td className={`amount ${transaction.type}`}>{formatCurrency(transaction.amount)}</td>
+                        <td className={'amount ' + transaction.type}>{formatCurrency(transaction.amount)}</td>
                         <td>{transaction.paymentMethod}</td>
                         <td>
-                          <button 
-                            onClick={() => handleDelete(transaction._id)}
-                            className="delete-btn"
-                            disabled={isLoading}
-                          >
-                            Delete
-                          </button>
+                          <button onClick={() => handleDelete(transaction._id)} className="delete-btn" disabled={isLoading}>Delete</button>
                         </td>
                       </motion.tr>
                     ))}
