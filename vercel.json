@@ -1,0 +1,24 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "server/index.js",
+      "use": "@vercel/node",
+      "name": "ExpenseTracker-API"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "server/index.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "client/index.html"
+    }
+  ],
+  "env": {
+    "MONGO_URI": "mongodb+srv://AccessUser:6uv33P9ydsh93VRi@prosun.7xdyt.mongodb.net/fitfat?retryWrites=true&w=majority"
+  },
+  "public": "public"
+}
